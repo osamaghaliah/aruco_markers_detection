@@ -55,6 +55,9 @@ This project involves the detection of ArUco markers in video files using OpenCV
    ```sh
    python CameraCalibration.py --image_dir calibration_images --image_format jpg --prefix image --square_size 1.0 --save_file calibration.yml
    ```
+
+   ![image](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/b89adfe6-f381-49a5-ae2f-a10f3e972b34)
+
    
     - **How The Terminal Should Look Like After Calibration Is Finished:**
   
