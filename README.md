@@ -1,10 +1,7 @@
 <h1 align="center"> ArUco Markers Detection </h1>
 
-## Project Overview
+<h2 align="center"> Table of Contents </h2>
 
-This project involves the detection of ArUco markers in video files using OpenCV. The goal is to process each frame of the video to detect and annotate ArUco markers, and then log the performance of this processing. The project also includes a summary of the average frame processing times for multiple input videos.
-
-## Table of Contents
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - [Project Overview](#project-overview)
@@ -12,7 +9,14 @@ This project involves the detection of ArUco markers in video files using OpenCV
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
+- [How Detection Looks Like](#how-detection-looks-like)
 - [Performance In Milliseconds](#performance-in-milliseconds)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Project Overview
+
+This project involves the detection of ArUco markers in video files using OpenCV. The goal is to process each frame of the video to detect and annotate ArUco markers, and then log the performance of this processing. The project also includes a summary of the average frame processing times for multiple input videos.
 
 ## Features
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -150,6 +154,21 @@ aruco_markers_detection/
 ├── main.py
 └── README.md
 ```
+
+## How Detection Looks Like:
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+![frame_0005](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/484d67a7-66aa-453a-809b-eb2d87879392)
+
+![frame_0252](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/4009d5e3-b5d4-46d3-9d52-f5cd11fc9476)
+
+![frame_0144](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/ed984ee7-c1cb-4640-b952-2dd19ae1ce12)
+
+![frame_0012](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/a4d2e990-ffdf-45d9-b181-37e43f0bfe7c)
+
+![frame_0390](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/18ee2312-e7dc-47fa-aef8-5e5c0631a9b4)
+
+![frame_0463](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/60118e24-fd1c-486a-9eb7-9ddc685672f8)
+
 
 ## Performance In Milliseconds
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
