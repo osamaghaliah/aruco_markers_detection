@@ -6,7 +6,7 @@
 
 - [Project Overview](#project-overview)
 - [Features](#features)
-- [Installation](#installation)
+- [Preparation](#preparation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [How Detection Looks Like](#how-detection-looks-like)
@@ -18,6 +18,8 @@
 
 This project involves the detection of ArUco markers in video files using OpenCV. The goal is to process each frame of the video to detect and annotate ArUco markers, and then log the performance of this processing. The project also includes a summary of the average frame processing times for multiple input videos.
 
+Eventually, it aligns the drone camera to markers so it can be directed to perform a path based on the alignments and distances.
+
 ## Features
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -25,8 +27,9 @@ This project involves the detection of ArUco markers in video files using OpenCV
 - Logging of processing times for each frame.
 - Summary of average processing times for multiple input videos.
 - Output of annotated videos and detection logs for each input video.
+- Directs a live camera to perform a path/lap based on a known video. 
 
-## Installation
+## Preparation
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 1. **Clone the repository:**
@@ -40,40 +43,31 @@ This project involves the detection of ArUco markers in video files using OpenCV
     pip install opencv-python opencv-contrib-python numpy argparse packaging
    ```
 
-3. **Ensure you have the necessary calibration file:**
-   - Place your calibration file (`calibration.yml`) in the `outputs` directory.
+3. **Camera Matrix:**
+
+   |                |                |                |
+   |:--------------:|:--------------:|:--------------:|
+   | **728.49671263** | **0.000000**   | **640.000000** |
+   | **0.000000**     | **728.49671263** | **360.000000** |
+   | **0.000000**     | **0.000000**     | **1.000000**   |
+
 
 ## Usage
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-1. **Prepare your input files:**
-   - Place your input video files and corresponding CSV drone logs in the `inputs` directory. Each input should be in a separate folder named `input1`, `input2`, ..., `input5`.
-
-2. **Calibrate the Camera:**
    
-   Use the checkerboard images in the `calibration_images/` directory to calibrate your camera. Run the `CameraCalibration.py` script to generate `calibration.yml`.
-   ```sh
-   python CameraCalibration.py --image_dir calibration_images --image_format jpg --prefix image --square_size 1.0 --save_file calibration.yml
-   ```
-
-   ![image](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/b89adfe6-f381-49a5-ae2f-a10f3e972b34)
-
-   
-    - **How The Terminal Should Look Like After Calibration Is Finished:**
-  
-       ```
-       Number of successful detections: 11
-       Calibration is finished. RMS:  1.1957113482361996
-       ```
-   
-   
-3. **Run the main script:**
-   
+1. **Run the main script:**
    ```sh
    python main.py
    ```
+   
+   - **Which processes input1 to input6 using 'ArUcoDetector.py' and creates output1 to output6 containing the following:**
+      - annotated_video.mp4
+      - 'frames' directory of the annotated video.
+      - detected_markers.csv
+      - processing_times.log
+   
 
-    - **How The Terminal Should Look Like After Detection Is Finished:**
+    - **How The Terminal Should Look Like During Detection:**
   
        ```
        Running command for input1...
@@ -83,32 +77,34 @@ This project involves the detection of ArUco markers in video files using OpenCV
        Running command for input3...
        input3: Frame Processing Time Average = 14.08 ms
        Running command for input4...
-       input4: Frame Processing Time Average = 10.51 ms
-       Running command for input5...
-       input5: Frame Processing Time Average = 5.07 ms
-    
+       .
+       .
+       .
        Summary of processing times has been saved to outputs\performance.csv
        ```
+
+2. **Run DroneAlignment.py:**
+    ```sh
+   python DroneAlignment.py --frames_directory
+   ```
+    
+   - **Creates 'MovementCommands.csv' which holds movement commands for each frame that had detected markers using the following 8 possible movements:**
+      - Move Up.
+      - Move Down.
+      - Move Right.
+      - Move Left.
+      - Turn Right.
+      - Turn Left.
+      - Move Forward.
+      - Move Backward.
 
 ## Project Structure
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-The project is organized as follows:
+The project is structured as follows:
 
 ```
 aruco_markers_detection/
-├── calibration_images/
-│   ├── image1.jpg
-│   ├── image2.jpg
-│   ├── image3.jpg
-│   ├── image4.jpg
-│   ├── image5.jpg
-│   ├── image6.jpg
-│   ├── image7.jpg
-│   ├── image8.jpg
-│   ├── image9.jpg
-│   ├── image10.jpg
-│   └── image11.jpg
 ├── inputs/
 │   ├── input1/
 │   │   ├── input1.mp4
@@ -124,6 +120,8 @@ aruco_markers_detection/
 │   │   └── input4.csv
 │   ├── input5/
 │   │   └── input5.mp4
+│   ├── input6/
+│   │   └── input6.mp4
 ├── outputs/
 │   ├── calibration.yml
 │   ├── output1/
@@ -151,9 +149,15 @@ aruco_markers_detection/
 │   │   ├── annotated_video.mp4
 │   │   ├── detected_markers.csv
 │   │   └── processing_times.log
+│   ├── output6/
+│   │   ├── frames/
+│   │   ├── annotated_video.mp4
+│   │   ├── detected_markers.csv
+│   │   └── processing_times.log
 │   └── performance.csv
-├── CameraCalibration.py
 ├── ArUcoDetector.py
+├── CameraMatrix.py
+├── DroneAlignment.py
 ├── main.py
 └── README.md
 ```
@@ -185,3 +189,4 @@ The following table summarizes the frame processing time averages for each input
 | input3  |           14.08 ms            |
 | input4  |           10.51 ms            |
 | input5  |            5.07 ms            |
+| input6  |            4.57 ms            |
