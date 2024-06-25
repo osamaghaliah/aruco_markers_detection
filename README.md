@@ -172,8 +172,6 @@ aruco_markers_detection/
 
 ![frame_0012](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/a4d2e990-ffdf-45d9-b181-37e43f0bfe7c)
 
-![frame_0390](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/18ee2312-e7dc-47fa-aef8-5e5c0631a9b4)
-
 ![frame_0463](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/60118e24-fd1c-486a-9eb7-9ddc685672f8)
 
 
