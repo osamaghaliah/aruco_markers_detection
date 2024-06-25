@@ -166,8 +166,6 @@ aruco_markers_detection/
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 ![frame_0005](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/484d67a7-66aa-453a-809b-eb2d87879392)
 
-![frame_0252](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/4009d5e3-b5d4-46d3-9d52-f5cd11fc9476)
-
 ![frame_0144](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/ed984ee7-c1cb-4640-b952-2dd19ae1ce12)
 
 ![frame_0012](https://github.com/osamaghaliah/aruco_markers_detection/assets/75171676/a4d2e990-ffdf-45d9-b181-37e43f0bfe7c)
