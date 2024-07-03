@@ -34,8 +34,8 @@ Eventually, it aligns the drone camera to markers so it can be directed to perfo
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/osamaghaliah/aruco-marker-detection.git
-   cd aruco-marker-detection
+   git clone https://github.com/osamaghaliah/aruco_marker_detection.git
+   cd aruco_marker_detection
    ```
 
 2. **Install required dependencies:**
