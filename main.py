@@ -20,10 +20,10 @@ def extract_average_processing_time(log_file_path):
 
 def main():
     # Define the input directories and their respective commands
-    input_dirs = [f'input{i}' for i in range(1, 8)]
+    input_dirs = [f'input{i}' for i in range(1, 7)]
     commands = [
         f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --output_dir outputs/output{i} --drone_log inputs/{d}/{d}.csv"
-        if d not in ["input5", "input6", "input7"] else
+        if d not in ["input5", "input6"] else
         f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --output_dir outputs/output{i}"
         for i, d in enumerate(input_dirs, start=1)
     ]
