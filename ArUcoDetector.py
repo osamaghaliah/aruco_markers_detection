@@ -16,6 +16,9 @@ camera_matrix = np.array([
 ])
 dist_coeffs = np.array([-0.033458, 0.105152, 0.001256, -0.006647, 0.000000])
 
+# Define a fixed known marker size in meters
+KNOWN_MARKER_SIZE = 0.09  # for example, 9 cm
+
 def draw_axes(img, camera_matrix, dist_coeffs, rvec, tvec, length=0.1):
     """Draw the axis on the image manually."""
     points = np.float32([
@@ -34,38 +37,52 @@ def draw_axes(img, camera_matrix, dist_coeffs, rvec, tvec, length=0.1):
     img = cv2.line(img, tuple(imgpts[0]), tuple(imgpts[3]), (255, 0, 0), 3)
     return img
 
-def detect_aruco_markers(frame, frame_id, aruco_dict, aruco_params, marker_size, detection_stats, csv_writer, drone_position):
+def calculate_marker_size(corner):
+    """Calculate the size of the marker using its corner points."""
+    side_lengths = [
+        np.linalg.norm(corner[0] - corner[1]),
+        np.linalg.norm(corner[1] - corner[2]),
+        np.linalg.norm(corner[2] - corner[3]),
+        np.linalg.norm(corner[3] - corner[0])
+    ]
+    return np.mean(side_lengths)
+
+def detect_aruco_markers(frame, frame_id, aruco_dict, aruco_params, detection_stats, csv_writer, drone_position):
     start_time = time.time()
     corners, ids, _ = cv2.aruco.detectMarkers(frame, aruco_dict, parameters=aruco_params)
 
     marker_positions = []
 
     if len(corners) > 0:
-        rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_size, camera_matrix, dist_coeffs)
+        for marker_id, corner in zip(ids, corners):
+            marker_size = calculate_marker_size(corner[0])
+            # Estimate the pose with a known marker size
+            rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers([corner], KNOWN_MARKER_SIZE, camera_matrix, dist_coeffs)
 
-        for rvec, tvec, marker_id, corner in zip(rvecs, tvecs, ids, corners):
-            frame = draw_axes(frame, camera_matrix, dist_coeffs, rvec, tvec, marker_size / 2)
-            cv2.aruco.drawDetectedMarkers(frame, [corner])
+            for rvec, tvec in zip(rvecs, tvecs):
+                frame = draw_axes(frame, camera_matrix, dist_coeffs, rvec, tvec, KNOWN_MARKER_SIZE / 2)
+                cv2.aruco.drawDetectedMarkers(frame, [corner])
 
-            corner = corner.reshape(4, 2).astype(int)
-            frame = cv2.polylines(frame, [corner], isClosed=True, color=(0, 255, 0), thickness=2)
+                corner = corner.reshape(4, 2).astype(int)
+                frame = cv2.polylines(frame, [corner], isClosed=True, color=(0, 255, 0), thickness=2)
 
-            distance = np.linalg.norm(tvec)
-            rmat, _ = cv2.Rodrigues(rvec)
-            yaw, pitch, roll = rotationMatrixToEulerAngles(rmat)
+                # Calculate the distance
+                distance = np.linalg.norm(tvec)
+                rmat, _ = cv2.Rodrigues(rvec)
+                yaw, pitch, roll = rotationMatrixToEulerAngles(rmat)
 
-            cv2.putText(frame,
-                        f"ID: {marker_id[0]}",
-                        (corner[0][0], corner[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                cv2.putText(frame,
+                            f"ID: {marker_id[0]}",
+                            (corner[0][0], corner[0][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-            detection_stats[marker_id[0]] += 1
+                detection_stats[marker_id[0]] += 1
 
-            marker_position_world = drone_position + tvec[0]
-            marker_positions.append((marker_id[0], marker_position_world))
+                marker_position_world = drone_position + tvec[0]
+                marker_positions.append((marker_id[0], marker_position_world))
 
-            qr_2d = [list(corner[0]), list(corner[1]), list(corner[2]), list(corner[3])]
-            qr_3d = [distance, yaw, pitch, roll]
-            csv_writer.writerow([frame_id, marker_id[0], qr_2d, qr_3d])
+                qr_2d = [list(corner[0]), list(corner[1]), list(corner[2]), list(corner[3])]
+                qr_3d = [distance, yaw, pitch, roll]
+                csv_writer.writerow([frame_id, marker_id[0], qr_2d, qr_3d])
     else:
         detection_stats['none'] += 1
 
@@ -88,7 +105,7 @@ def rotationMatrixToEulerAngles(R):
         z = 0
     return np.degrees(x), np.degrees(y), np.degrees(z)
 
-def main(video_path, marker_size, output_dir, drone_log_file=None):
+def main(video_path, output_dir, drone_log_file=None):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -141,7 +158,7 @@ def main(video_path, marker_size, output_dir, drone_log_file=None):
             else:
                 drone_position = np.array([0, 0, 0])
 
-            frame, marker_positions, processing_time = detect_aruco_markers(frame, frame_id, aruco_dict, aruco_params, marker_size, detection_stats, csv_writer, drone_position)
+            frame, marker_positions, processing_time = detect_aruco_markers(frame, frame_id, aruco_dict, aruco_params, detection_stats, csv_writer, drone_position)
             processing_times.append(processing_time)
 
             frame_path = os.path.join(frames_dir, f'frame_{frame_id:04d}.png')
@@ -170,7 +187,6 @@ def main(video_path, marker_size, output_dir, drone_log_file=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ArUco Marker Detection in Video')
     parser.add_argument('--video', type=str, required=True, help='Path to the video file')
-    parser.add_argument('--marker_size', type=float, default=0.19, help='Marker size in meters (default: 0.19 for A4 size)')
     parser.add_argument('--output_dir', type=str, required=True, help='Path to the output directory')
     parser.add_argument('--drone_log', type=str, help='Path to the drone log CSV file (optional)')
     args = parser.parse_args()
@@ -178,7 +194,6 @@ if __name__ == "__main__":
     # Debugging: Print the received arguments
     print("Received arguments:")
     print(f"Video Path: {args.video}")
-    print(f"Marker Size: {args.marker_size}")
     print(f"Output Directory: {args.output_dir}")
     if args.drone_log:
         print(f"Drone Log: {args.drone_log}")
@@ -192,4 +207,4 @@ if __name__ == "__main__":
     # Setup logging
     logging.basicConfig(filename=os.path.join(args.output_dir, 'processing_times.log'), filemode='w', level=logging.INFO, format='%(asctime)s %(message)s')
 
-    main(args.video, args.marker_size, args.output_dir, args.drone_log)
+    main(args.video, args.output_dir, args.drone_log)

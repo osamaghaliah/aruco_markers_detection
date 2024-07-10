@@ -20,11 +20,11 @@ def extract_average_processing_time(log_file_path):
 
 def main():
     # Define the input directories and their respective commands
-    input_dirs = [f'input{i}' for i in range(1, 7)]
+    input_dirs = [f'input{i}' for i in range(1, 8)]
     commands = [
-        f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --marker_size 0.19 --drone_log inputs/{d}/{d}.csv --output_dir outputs/output{i}"
-        if d != "input5" and d != "input6" else
-        f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --marker_size 0.19 --output_dir outputs/output{i}"
+        f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --output_dir outputs/output{i} --drone_log inputs/{d}/{d}.csv"
+        if d not in ["input5", "input6", "input7"] else
+        f"python ArUcoDetector.py --video inputs/{d}/{d}.mp4 --output_dir outputs/output{i}"
         for i, d in enumerate(input_dirs, start=1)
     ]
 
@@ -39,7 +39,7 @@ def main():
             print(f"Running command for {input_dirs[i]}...")
             run_command(command)
 
-            log_file_path = os.path.join(f'outputs/output{i+1}', 'processing_times.log')
+            log_file_path = os.path.join(f'outputs/output{i}', 'processing_times.log')
             if os.path.exists(log_file_path):
                 avg_time = extract_average_processing_time(log_file_path)
                 summary_file.write(f"{input_dirs[i]},{avg_time}\n")
