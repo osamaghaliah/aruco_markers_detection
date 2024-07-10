@@ -9,13 +9,16 @@ def run_command(command):
     return process.stdout, process.stderr
 
 def extract_average_processing_time(log_file_path):
-    with open(log_file_path, 'r') as file:
-        lines = file.readlines()
-    if lines:
-        last_line = lines[-1]
-        if "Frame Processing Time Average" in last_line:
-            average_value = last_line.split('=')[-1].strip().split()[0]
-            return average_value
+    try:
+        with open(log_file_path, 'r') as file:
+            lines = file.readlines()
+        if lines:
+            last_line = lines[-1]
+            if "Frame Processing Time Average" in last_line:
+                average_value = last_line.split('=')[-1].strip().split()[0]
+                return average_value
+    except Exception as e:
+        print(f"Error reading log file {log_file_path}: {e}")
     return "Average processing time not found"
 
 def main():
@@ -31,6 +34,9 @@ def main():
     # Path to the summary CSV file
     summary_file_path = os.path.join('outputs', 'performance.csv')
 
+    # Ensure the outputs directory exists
+    os.makedirs('outputs', exist_ok=True)
+
     # Run each command and collect the results
     with open(summary_file_path, 'w') as summary_file:
         summary_file.write("INPUT#,Frame Processing Time Average\n")
@@ -39,7 +45,9 @@ def main():
             print(f"Running command for {input_dirs[i]}...")
             run_command(command)
 
-            log_file_path = os.path.join(f'outputs/output{i}', 'processing_times.log')
+            output_dir = f'outputs/output{i + 1}'  # Adjusted to correctly reflect the output directory
+            log_file_path = os.path.join(output_dir, 'processing_times.log')
+            print(f"Checking log file at: {log_file_path}")
             if os.path.exists(log_file_path):
                 avg_time = extract_average_processing_time(log_file_path)
                 summary_file.write(f"{input_dirs[i]},{avg_time}\n")
