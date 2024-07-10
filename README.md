@@ -85,7 +85,7 @@ Eventually, it aligns the drone camera to markers so it can be directed to perfo
 
 2. **Run DroneAlignment.py:**
     ```sh
-   python DroneAlignment.py --frames_directory
+   python DroneAlignment.py
    ```
     
    - **Creates 'MovementCommands.csv' which holds movement commands for each frame that had detected markers using the following 8 possible movements:**
